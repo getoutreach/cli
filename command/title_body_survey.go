@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/cli/cli/api"
@@ -145,6 +146,15 @@ func titleBodySurvey(cmd *cobra.Command, issueState *issueMetadataState, apiClie
 			}
 			issueState.Body = templateContents
 		} else {
+			bodyTemplatePath := cmd.Flag("body-template").Value.String()
+			if bodyTemplatePath != "" {
+				b, err := ioutil.ReadFile(bodyTemplatePath)
+				if err != nil {
+					return fmt.Errorf("couldn't open body template: %v", err)
+				}
+
+				defs.Body = string(b)
+			}
 			issueState.Body = defs.Body
 		}
 	}

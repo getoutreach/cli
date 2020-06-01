@@ -423,6 +423,8 @@ func init() {
 	prCreateCmd.Flags().BoolP("web", "w", false, "Open the web browser to create a pull request")
 	prCreateCmd.Flags().BoolP("fill", "f", false, "Do not prompt for title/body and just use commit info")
 
+	prCreateCmd.Flags().StringP("body-template", "", "", "Use a template to create the pull request body")
+
 	prCreateCmd.Flags().StringSliceP("reviewer", "r", nil, "Request a review from someone by their `login`")
 	prCreateCmd.Flags().StringSliceP("assignee", "a", nil, "Assign a person by their `login`")
 	prCreateCmd.Flags().StringSliceP("label", "l", nil, "Add a label by `name`")

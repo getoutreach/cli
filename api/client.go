@@ -217,6 +217,7 @@ func (c Client) REST(method string, p string, body io.Reader, data interface{}) 
 	}
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/vnd.github.comfort-fade-preview+json")
 
 	resp, err := c.http.Do(req)
 	if err != nil {
