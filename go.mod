@@ -5,9 +5,12 @@ go 1.13
 require (
 	github.com/AlecAivazis/survey/v2 v2.0.7
 	github.com/MakeNowJust/heredoc v1.0.0
+	github.com/MichaelMure/go-term-markdown v0.1.3
 	github.com/briandowns/spinner v1.11.1
 	github.com/charmbracelet/glamour v0.1.1-0.20200320173916-301d3bcf3058
 	github.com/dlclark/regexp2 v1.2.0 // indirect
+	github.com/dustin/go-humanize v1.0.0
+	github.com/gomarkdown/markdown v0.0.0-20200513213024-62c5e2c608cc // indirect
 	github.com/google/go-cmp v0.4.1
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/hashicorp/go-version v1.2.0

@@ -1,12 +1,14 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/shurcooL/githubv4"
 
@@ -36,6 +38,65 @@ type PullRequestsPayload struct {
 type PullRequestAndTotalCount struct {
 	TotalCount   int
 	PullRequests []PullRequest
+}
+
+type IssueComment struct {
+	ID        int       `json:"id"`
+	NodeID    string    `json:"node_id"`
+	URL       string    `json:"url"`
+	HTMLURL   string    `json:"html_url"`
+	Body      string    `json:"body"`
+	User      *User     `json:"user"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type User struct {
+	Login             string `json:"login"`
+	ID                int    `json:"id"`
+	NodeID            string `json:"node_id"`
+	AvatarURL         string `json:"avatar_url"`
+	GravatarID        string `json:"gravatar_id"`
+	URL               string `json:"url"`
+	HTMLURL           string `json:"html_url"`
+	FollowersURL      string `json:"followers_url"`
+	FollowingURL      string `json:"following_url"`
+	GistsURL          string `json:"gists_url"`
+	StarredURL        string `json:"starred_url"`
+	SubscriptionsURL  string `json:"subscriptions_url"`
+	OrganizationsURL  string `json:"organizations_url"`
+	ReposURL          string `json:"repos_url"`
+	EventsURL         string `json:"events_url"`
+	ReceivedEventsURL string `json:"received_events_url"`
+	Type              string `json:"type"`
+	SiteAdmin         bool   `json:"site_admin"`
+}
+
+type PullRequestComment struct {
+	URL                 string    `json:"url"`
+	ID                  int       `json:"id"`
+	NodeID              string    `json:"node_id"`
+	PullRequestReviewID int       `json:"pull_request_review_id"`
+	DiffHunk            string    `json:"diff_hunk"`
+	Path                string    `json:"path"`
+	Position            int       `json:"position"`
+	OriginalPosition    int       `json:"original_position"`
+	CommitID            string    `json:"commit_id"`
+	OriginalCommitID    string    `json:"original_commit_id"`
+	InReplyToID         int       `json:"in_reply_to_id"`
+	Body                string    `json:"body"`
+	CreatedAt           time.Time `json:"created_at"`
+	UpdatedAt           time.Time `json:"updated_at"`
+	HTMLURL             string    `json:"html_url"`
+	User                *User     `json:"user"`
+	PullRequestURL      string    `json:"pull_request_url"`
+	AuthorAssociation   string    `json:"author_association"`
+	StartLine           int       `json:"start_line"`
+	OriginalStartLine   int       `json:"original_start_line"`
+	StartSide           string    `json:"start_side"`
+	Line                int       `json:"line"`
+	OriginalLine        int       `json:"original_line"`
+	Side                string    `json:"side"`
 }
 
 type PullRequest struct {
@@ -235,6 +296,32 @@ func (c Client) PullRequestDiff(baseRepo ghrepo.Interface, prNumber int) (string
 	}
 
 	return "", errors.New("pull request diff lookup failed")
+}
+
+// PullRequestComments returns a list of pull request comments on a given PR
+func PullRequestComments(client *Client, repo ghrepo.Interface, currentPRNumber int) ([]*PullRequestComment, error) {
+	path := fmt.Sprintf("repos/%s/pulls/%d/comments", ghrepo.FullName(repo), currentPRNumber)
+	body := new(bytes.Buffer)
+	result := make([]*PullRequestComment, 0)
+	err := client.REST("GET", path, body, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// IssueComments returns a list of issuecomments on a given PR
+func IssueComments(client *Client, repo ghrepo.Interface, currentPRNumber int) ([]*IssueComment, error) {
+	path := fmt.Sprintf("repos/%s/issues/%d/comments", ghrepo.FullName(repo), currentPRNumber)
+	body := new(bytes.Buffer)
+	result := make([]*IssueComment, 0)
+	err := client.REST("GET", path, body, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func PullRequests(client *Client, repo ghrepo.Interface, currentPRNumber int, currentPRHeadRef, currentUsername string) (*PullRequestsPayload, error) {
